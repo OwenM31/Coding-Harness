@@ -11,8 +11,9 @@
 
 This is a collection of workflows *mainly* for making detailed plans and systematically executing them.  
 
+![Coding Harness Demo](harness-demo.gif)
+
 Run each workflow by referencing its `.md` with an `@`.  
-They run as standalone commands. (Shown [below](#usage) )
 
 A consistent cycle of workflows is helpful for managing [context rot](https://www.trychroma.com/research/context-rot). 
 
