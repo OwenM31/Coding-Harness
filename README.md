@@ -95,7 +95,7 @@ Inside your coding agent of choice, run `@help.md` to view a more detailed guide
 
 ### Context Management 
 
-The key tool in this harness for preventing context-rot is the **pause ➔ clear-context ➔ resume** workflow:
+The key tool in this harness for preventing **context rot** is the **pause ➔ clear-context ➔ resume** workflow:
 
 ```text
 [Operation] ──▶ @pause.md ──▶ /clear-context ──▶ @resume.md ──▶ [Next Operation]
