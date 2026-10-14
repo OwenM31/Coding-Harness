@@ -119,8 +119,11 @@ Model-agnostic and compatible with any coding agent tool that supports prompt fi
 The scripts located in `.agent/harness/scripts/` are meta-development utilities for maintaining and validating the harness itself (checking YAML, XML, etc.).
 
 ### TODO
+* Add `update-harness.md` workflow that updates the current `.agent/` folder with the files currently available at the GitHub repo.
+  * This should ignore the files that fall under "project memory", so that way the user can seamlessly continue using the harness without loosing their plans to an update.
 * Add `customize-harness.md` workflow to start a conversation about sourcing specialized skills/tools for a task.
   * The workflow needs to integrate refrences to these new skills/tools into existing workflows.
 * Add additional git workflow integration
   * Automatically prompt user to create new branch at the beginning of a milestone/phase, and remind to merge after verification.
   * Update `debug.md` workflow to utilize `git log`, `git bisect`, and `git blame` debugging techniques.
+
