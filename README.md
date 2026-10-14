@@ -117,3 +117,10 @@ Model-agnostic and compatible with any coding agent tool that supports prompt fi
 
 ### Meta-Development & Scripts
 The scripts located in `.agent/harness/scripts/` are meta-development utilities for maintaining and validating the harness itself (checking YAML, XML, etc.).
+
+### TODO
+* Add `customize-harness.md` workflow to start a conversation about sourcing specialized skills/tools for a task.
+  * The workflow needs to integrate refrences to these new skills/tools into existing workflows.
+* Add additional git workflow integration
+  * Automatically prompt user to create new branch at the beginning of a milestone/phase, and remind to merge after verification.
+  * Update `debug.md` workflow to utilize `git log`, `git bisect`, and `git blame` debugging techniques.
