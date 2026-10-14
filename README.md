@@ -10,7 +10,6 @@
 ## Intro
 
 This is a collection of workflows *mainly* for creating detailed plans and systematically executing them.  
-
 Run each workflow by referencing its `.md` with an `@`.  
 
 ![Coding Harness Demo](harness-demo.gif)
