@@ -9,11 +9,11 @@
 ---
 ## Intro
 
-This is a collection of workflows *mainly* for making detailed plans and systematically executing them.  
-
-![Coding Harness Demo](harness-demo.gif)
+This is a collection of workflows *mainly* for creating detailed plans and systematically executing them.  
 
 Run each workflow by referencing its `.md` with an `@`.  
+
+![Coding Harness Demo](harness-demo.gif)
 
 A consistent cycle of workflows is helpful for managing [context rot](https://www.trychroma.com/research/context-rot). 
 
