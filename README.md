@@ -116,4 +116,4 @@ Model-agnostic and compatible with any coding agent tool that supports prompt fi
 ## Notes
 
 ### Meta-Development & Scripts
-The scripts located in `.agent/harness/scripts/` are meta-development utilities for maintaining and validating the harness itself (checking YAML frontmatter, XML tags, etc.).
+The scripts located in `.agent/harness/scripts/` are meta-development utilities for maintaining and validating the harness itself (checking YAML, XML, etc.).
