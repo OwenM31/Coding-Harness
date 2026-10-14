@@ -7,9 +7,9 @@
 5. [Notes](#notes)
 
 ---
+## Intro
 
-This is a model-agnostic coding agent workflow harness.  
-It is a collection of workflows *mainly* for making detailed plans and systematically executing them.  
+This is a collection of workflows *mainly* for making detailed plans and systematically executing them.  
 
 Run each workflow by referencing its `.md` with an `@`.  
 They run as standalone commands. (Shown [below](#usage) )
