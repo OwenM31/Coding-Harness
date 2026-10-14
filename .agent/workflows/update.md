@@ -1,23 +1,26 @@
 ---
-description: Check for updates to the Coding Harness
+description: Check for updates or update harness components from GitHub
+argument-hint: "[--check-only]"
 ---
 
 # /update Workflow
 
 <objective>
-Check if updates are available for the Coding Harness.
+Check for Coding Harness updates or execute the full update-harness workflow.
 </objective>
 
 <process>
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- HARNESS ► UPDATE STATUS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+To update your Coding Harness from GitHub while preserving all project memory (`.agent/state/`), run:
 
-This version of Coding-Harness is not configured to update.
+```text
+@.agent/workflows/update-harness.md
+```
 
-To update, pull changes from your upstream repository or update `.agent/` directly.
+Or run with `--check-only` to check if a new version is available without applying changes:
 
-───────────────────────────────────────────────────────
+```text
+@.agent/workflows/update-harness.md --check-only
+```
 
 </process>

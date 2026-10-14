@@ -71,7 +71,7 @@ UTILITIES
 ─────────
 @help.md                   Display this guide
 @web-search.md [query]     Perform targeted web searches for APIs, syntax, and libraries
-@update.md                 Check harness version and update status
+@update-harness.md [flags] Update harness from GitHub (preserves .agent/state/)
 @whats-new.md              Display harness changelog and recent enhancements
 
 ────────────────────────────────────────────────────────────────────
