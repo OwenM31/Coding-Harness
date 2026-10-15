@@ -1,10 +1,14 @@
 # Coding Harness
 
-1. [Intro]()
+1. [Intro](#intro)
 2. [Architecture](#architecture)
 3. [Installation](#installation)
 4. [Usage](#usage)   
 5. [Notes](#notes)
+
+---
+
+**REQUIRES** `playwright-cli` for `design-phase` and `ux-sweep` workflows.  
 
 ---
 ## Intro
@@ -33,10 +37,12 @@ For example, in the simplest case, the **PLAN**->**EXECUTE** workflow can be run
 <li>Grouping phases into <i>MILESTONES</i>:
 <ul><li><b>NEW-MILESTONE</b> (generates list of phases) ➔ <b>PLAN {N}</b> ➔ <b>EXECUTE {N}</b> ➔ <b>VERIFY {N}</b> ➔ <b>AUDIT-MILESTONE</b> ➔ <b>COMPLETE-MILESTONE</b></li></ul>
 </li>
-<li>Specialized cycles for researching, auditing, verifying, and debugging.</li>
+<li>Specialized cycle for UI work.
+<ul><li><b>DISCUSS-PHASE</b> ➔ <b>RESEARCH-PHASE</b> ➔ <b>DESIGN-PHASE</b> ➔ <b>PLAN</b> ➔ <b>EXECUTE</b></li></ul>
+</li>
 </ul>
 
-> For trees of plans past 3 levels, it is recommended to tackle each list of milestones individually, clearing `SPEC.md` and `ROADMAP.md` after each project, then initializing from scratch by running `@new-project.md`.
+> For trees of plans past 3 levels, it is recommended to tackle each list of milestones individually, clearing `SPEC.md` and `ROADMAP.md` after each project, then initializing from scratch by running `@new-project.md` (or simply `@add-milestone.md`).
 
 </details>
 
@@ -105,7 +111,7 @@ This sequence of workflows writes a summary of the agent's memory to `STATE.md`,
 
 ### Skills
 
-The `.agent/skills/` directory contains 11 protocols (e.g., `debugger`, `empirical-validation`, `verifier`, and `codebase-mapper`). Agents consult these skills during workflow runs to perform tasks while managing context according to the principle of [progressive-disclosure](https://docs.claude-mem.ai/progressive-disclosure).
+The `.agent/skills/` directory contains protocols (e.g., `debugger`, `empirical-validation`, `verifier`, and `codebase-mapper`). Agents consult these skills during workflow runs to perform tasks while managing context according to the principle of [progressive-disclosure](https://docs.claude-mem.ai/progressive-disclosure).
 
 ### Compatibility
 
@@ -125,3 +131,20 @@ The scripts located in `.agent/harness/scripts/` are meta-development utilities 
   * Automatically prompt user to create new branch at the beginning of a milestone/phase, and remind to merge after verification.
   * Update `debug.md` workflow to utilize `git log`, `git bisect`, and `git blame` debugging techniques.
 
+### Limitations
+<details>
+<summary><b>Self Reflection</b></summary>
+
+I write this section to explain what this project **is** and what it **is not**.  
+It **is not** a full *Terminal UI coding environment*, meaning it **does not** have the ability to dispatch concurrent agents. This is obviously a huge limitation.  
+
+This repo **is** a list of markdown files to be used as atomic instructions.  
+
+**Why** do I avoid adding those powerful features (such as *concurrent agent dispatch* with *automatic model selection*)?  
+
+Such a feature (which might utilize a library such as **LangChain**/**LangGraph**), would require API keys for the different model providers.  
+I am more interested in using my monthly-subscription logins (for now), which must be used through approved channels (such as each provider's flagship TUI).  
+Each coding agent environment has its own mechanism for dispatching sub-agents, so it is currently difficult (!!!) to **consistently** dispatch agents in a structured way.
+
+Please let me know if there's something I'm missing with this reasoning.
+</details>
