@@ -142,7 +142,7 @@ This repo **is** a list of markdown files to be used as atomic instructions.
 
 **Why** do I avoid adding those powerful features (such as *concurrent agent dispatch* with *automatic model selection*)?  
 
-Such a feature (which might utilize a library such as **LangChain**/**LangGraph**), would require API keys for the different model providers.  
+Such a feature (which might dispatch agents via **LangChain**/**LangGraph**), would require API keys for the different model providers.  
 I am more interested in using my monthly-subscription logins (for now), which must be used through approved channels (such as each provider's flagship TUI).  
 Each coding agent environment has its own mechanism for dispatching sub-agents, so it is currently difficult (!!!) to **consistently** dispatch agents in a structured way.
 
