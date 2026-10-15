@@ -35,6 +35,8 @@ Create executable phase prompts (PLAN.md files) for a roadmap phase with integra
 **Required files:**
 - `.agent/state/SPEC.md` — Must be FINALIZED (Planning Lock)
 - `.agent/state/ROADMAP.md` — Must have phases defined
+- `.agent/rules/STYLE.md` — If phase involves UI, styling tokens approved by @design-phase
+- `.agent/state/DESIGN_STATE.md` — If phase involves UI, design continuity and variant decisions
 </context>
 
 <philosophy>
@@ -363,6 +365,8 @@ Plans:
 ### Workflows
 | Command | Relationship |
 |---------|--------------|
+| `/discuss-phase` | Scopes architectural decisions before planning |
+| `/design-phase` | Researches aesthetic benchmarks & locks UI design variants before planning |
 | `/map` | Run before /plan to get codebase context |
 | `/execute` | Runs PLAN.md files created by /plan |
 | `/verify` | Validates executed plans |
@@ -372,4 +376,5 @@ Plans:
 |-------|---------|
 | `planner` | Detailed planning methodology |
 | `plan-checker` | Validates plans before execution |
+| `frontend-designer` | Aesthetic benchmarks & UI design prototyping |
 </related>
