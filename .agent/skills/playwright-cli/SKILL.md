@@ -1,154 +1,278 @@
 ---
-name: Playwright CLI
-description: Drives headless browser interactions, screenshots, and visual DOM verification via Playwright CLI and scripts
+name: playwright-cli
+description: Automates browser interactions for web testing, form filling, screenshots, and data extraction. Use when the user needs to navigate websites, interact with web pages, fill forms, take screenshots, test web applications, or extract information from web pages.
+allowed-tools: Bash(playwright-cli:*)
 ---
 
-# Playwright CLI Skill
+# Browser Automation with playwright-cli
 
-<role>
-You are a browser automation specialist. You use Playwright via the command line and lightweight execution scripts to simulate real user interactions, capture visual screenshots, verify DOM accessibility, and detect runtime console/network errors.
-</role>
+## Quick start
 
----
-
-## Core Principles
-
-1. **Reality Over Mockery**: The browser is the ultimate arbiter of software truth. If it doesn't render in the browser, it doesn't work.
-2. **Speed & Lightweight Footprint**: Use direct CLI commands and ad-hoc Node evaluation scripts over bulky end-to-end setups when performing rapid exploratory sweeps.
-3. **Artifact-Driven Evidence**: Every visual assertion must be backed by a captured screenshot saved to `.agent/state/artifacts/screenshots/`.
-4. **Console & Network Vigilance**: Silent JavaScript crashes (e.g., `TypeError: undefined is not a function` inside an `onClick`) must never go unnoticed.
-
----
-
-## Playwright CLI Capabilities
-
-### 1. Fast Full-Page Screenshot Capture
-Capture full rendered page states across viewports without writing test suites:
-
-```powershell
-# Desktop Viewport (1280x800)
-npx playwright screenshot --full-page --viewport-size=1280,800 http://localhost:5173/admin/payroll .agent/state/artifacts/screenshots/admin_payroll_desktop.png
-
-# Mobile Viewport (iPhone 14 / 390x844)
-npx playwright screenshot --full-page --viewport-size=390,844 http://localhost:5173/admin/payroll .agent/state/artifacts/screenshots/admin_payroll_mobile.png
+```bash
+# open new browser
+playwright-cli open
+# navigate to a page
+playwright-cli goto https://playwright.dev
+# interact with the page using refs from the snapshot
+playwright-cli click e15
+playwright-cli type "page.click"
+playwright-cli press Enter
+# take a screenshot (rarely used, as snapshot is more common)
+playwright-cli screenshot
+# close the browser
+playwright-cli close
 ```
 
-### 2. PDF & Layout Export
-Export printable views or check page clipping:
-```powershell
-npx playwright pdf http://localhost:5173/receipts/rec-001 .agent/state/artifacts/screenshots/receipt.pdf
+## Commands
+
+### Core
+
+```bash
+playwright-cli open
+# open and navigate right away
+playwright-cli open https://example.com/
+playwright-cli goto https://playwright.dev
+playwright-cli type "search query"
+playwright-cli click e3
+playwright-cli dblclick e7
+playwright-cli fill e5 "user@example.com"
+playwright-cli drag e2 e8
+playwright-cli hover e4
+playwright-cli select e9 "option-value"
+playwright-cli upload ./document.pdf
+playwright-cli check e12
+playwright-cli uncheck e12
+playwright-cli snapshot
+playwright-cli snapshot --filename=after-click.yaml
+playwright-cli eval "document.title"
+playwright-cli eval "el => el.textContent" e5
+playwright-cli dialog-accept
+playwright-cli dialog-accept "confirmation text"
+playwright-cli dialog-dismiss
+playwright-cli resize 1920 1080
+playwright-cli close
 ```
 
-### 3. Interactive Code Generation & Exploration
-When an interactive trace or locator inspection is needed:
-```powershell
-npx playwright codegen http://localhost:5173
+### Navigation
+
+```bash
+playwright-cli go-back
+playwright-cli go-forward
+playwright-cli reload
 ```
 
----
+### Keyboard
 
-## Ad-Hoc Evaluation Scripts (Node + Playwright)
-
-When CLI flags alone cannot perform multi-step interactions (e.g., logging in, clicking buttons, testing modals), run a targeted lightweight script via `node` from the project's scratch space.
-
-### Template: Interactive Page Sweep Script
-```typescript
-// scratch/sweep_page.js
-const { chromium } = require('@playwright/test');
-const fs = require('fs');
-
-(async () => {
-  const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({
-    viewport: { width: 1280, height: 800 }
-  });
-  const page = await context.newPage();
-
-  // 1. Error Monitoring
-  const consoleErrors = [];
-  const networkErrors = [];
-
-  page.on('console', msg => {
-    if (msg.type() === 'error') consoleErrors.push(msg.text());
-  });
-  page.on('pageerror', error => {
-    consoleErrors.push(error.message);
-  });
-  page.on('response', res => {
-    if (res.status() >= 400) {
-      networkErrors.push(`${res.status()} ${res.url()}`);
-    }
-  });
-
-  // 2. Navigation
-  const targetUrl = process.argv[2] || 'http://localhost:5173';
-  await page.goto(targetUrl, { waitUntil: 'networkidle', timeout: 15000 });
-
-  // 3. Inventory Interactive Elements
-  const buttonElements = await page.locator('button:visible').all();
-  const deadButtons = [];
-
-  for (const btn of buttonElements) {
-    const text = (await btn.innerText()).trim() || (await btn.getAttribute('aria-label')) || 'Unnamed Button';
-    const beforeUrl = page.url();
-    
-    // Attempt non-navigating click test
-    try {
-      await btn.click({ timeout: 1500 });
-      // Check if modal or drawer opened
-      const hasModal = await page.locator('[role="dialog"]:visible').count();
-      if (hasModal > 0) {
-        // Close modal via Escape
-        await page.keyboard.press('Escape');
-      }
-    } catch (e) {
-      deadButtons.push({ text, error: e.message });
-    }
-  }
-
-  // 4. Capture Final Visual State
-  const outPath = process.argv[3] || '.agent/state/artifacts/screenshots/sweep_output.png';
-  await page.screenshot({ path: outPath, fullPage: true });
-
-  // 5. Output JSON Summary
-  const report = {
-    url: targetUrl,
-    totalButtons: buttonElements.length,
-    deadButtons,
-    consoleErrors,
-    networkErrors
-  };
-
-  console.log(JSON.stringify(report, null, 2));
-  await browser.close();
-})();
+```bash
+playwright-cli press Enter
+playwright-cli press ArrowDown
+playwright-cli keydown Shift
+playwright-cli keyup Shift
 ```
 
----
+### Mouse
 
-## Authentication & Session Injection
+```bash
+playwright-cli mousemove 150 300
+playwright-cli mousedown
+playwright-cli mousedown right
+playwright-cli mouseup
+playwright-cli mouseup right
+playwright-cli mousewheel 0 100
+```
 
-For routes gated by login or role-based access control (RBAC):
+### Save as
 
-1. **Storage State Reuse**:
-   If Playwright test fixtures have already authenticated, use `--load-storage`:
-   ```powershell
-   npx playwright screenshot --load-storage=.auth/admin.json http://localhost:5173/admin/payroll .agent/state/artifacts/screenshots/admin.png
-   ```
+```bash
+playwright-cli screenshot
+playwright-cli screenshot e5
+playwright-cli screenshot --filename=page.png
+playwright-cli pdf --filename=page.pdf
+```
 
-2. **Cookie / LocalStorage Pre-Seeding**:
-   Inject session tokens directly in the Node runner:
-   ```javascript
-   await context.addCookies([
-     { name: 'st_at', value: token, domain: 'localhost', path: '/' }
-   ]);
-   ```
+### Tabs
 
----
+```bash
+playwright-cli tab-list
+playwright-cli tab-new
+playwright-cli tab-new https://example.com/page
+playwright-cli tab-close
+playwright-cli tab-close 2
+playwright-cli tab-select 0
+```
 
-## Fallback & Graceful Degradation
+### Storage
 
-If the target project does not have Playwright installed:
-1. **Check package.json**: Look for `@playwright/test` or `playwright`.
-2. **Auto-Install Option**: Run `npm install -D @playwright/test && npx playwright install chromium` if permissible.
-3. **Static Fallback**: If browser execution cannot be established (e.g., pure backend environment), notify the user and fall back to static route-tree and JSX/template analysis.
+```bash
+playwright-cli state-save
+playwright-cli state-save auth.json
+playwright-cli state-load auth.json
+
+# Cookies
+playwright-cli cookie-list
+playwright-cli cookie-list --domain=example.com
+playwright-cli cookie-get session_id
+playwright-cli cookie-set session_id abc123
+playwright-cli cookie-set session_id abc123 --domain=example.com --httpOnly --secure
+playwright-cli cookie-delete session_id
+playwright-cli cookie-clear
+
+# LocalStorage
+playwright-cli localstorage-list
+playwright-cli localstorage-get theme
+playwright-cli localstorage-set theme dark
+playwright-cli localstorage-delete theme
+playwright-cli localstorage-clear
+
+# SessionStorage
+playwright-cli sessionstorage-list
+playwright-cli sessionstorage-get step
+playwright-cli sessionstorage-set step 3
+playwright-cli sessionstorage-delete step
+playwright-cli sessionstorage-clear
+```
+
+### Network
+
+```bash
+playwright-cli route "**/*.jpg" --status=404
+playwright-cli route "https://api.example.com/**" --body='{"mock": true}'
+playwright-cli route-list
+playwright-cli unroute "**/*.jpg"
+playwright-cli unroute
+```
+
+### DevTools
+
+```bash
+playwright-cli console
+playwright-cli console warning
+playwright-cli network
+playwright-cli run-code "async page => await page.context().grantPermissions(['geolocation'])"
+playwright-cli tracing-start
+playwright-cli tracing-stop
+playwright-cli video-start
+playwright-cli video-stop video.webm
+```
+
+## Open parameters
+```bash
+# Use specific browser when creating session
+playwright-cli open --browser=chrome
+playwright-cli open --browser=firefox
+playwright-cli open --browser=webkit
+playwright-cli open --browser=msedge
+# Connect to browser via extension
+playwright-cli open --extension
+
+# Use persistent profile (by default profile is in-memory)
+playwright-cli open --persistent
+# Use persistent profile with custom directory
+playwright-cli open --profile=/path/to/profile
+
+# Start with config file
+playwright-cli open --config=my-config.json
+
+# Close the browser
+playwright-cli close
+# Delete user data for the default session
+playwright-cli delete-data
+```
+
+## Snapshots
+
+After each command, playwright-cli provides a snapshot of the current browser state.
+
+```bash
+> playwright-cli goto https://example.com
+### Page
+- Page URL: https://example.com/
+- Page Title: Example Domain
+### Snapshot
+[Snapshot](.playwright-cli/page-2026-02-14T19-22-42-679Z.yml)
+```
+
+You can also take a snapshot on demand using `playwright-cli snapshot` command.
+
+If `--filename` is not provided, a new snapshot file is created with a timestamp. Default to automatic file naming, use `--filename=` when artifact is a part of the workflow result.
+
+## Browser Sessions
+
+```bash
+# create new browser session named "mysession" with persistent profile
+playwright-cli -s=mysession open example.com --persistent
+# same with manually specified profile directory (use when requested explicitly)
+playwright-cli -s=mysession open example.com --profile=/path/to/profile
+playwright-cli -s=mysession click e6
+playwright-cli -s=mysession close  # stop a named browser
+playwright-cli -s=mysession delete-data  # delete user data for persistent session
+
+playwright-cli list
+# Close all browsers
+playwright-cli close-all
+# Forcefully kill all browser processes
+playwright-cli kill-all
+```
+
+## Local installation
+
+In some cases user might want to install playwright-cli locally. If running globally available `playwright-cli` binary fails, use `npx playwright-cli` to run the commands. For example:
+
+```bash
+npx playwright-cli open https://example.com
+npx playwright-cli click e1
+```
+
+## Example: Form submission
+
+```bash
+playwright-cli open https://example.com/form
+playwright-cli snapshot
+
+playwright-cli fill e1 "user@example.com"
+playwright-cli fill e2 "password123"
+playwright-cli click e3
+playwright-cli snapshot
+playwright-cli close
+```
+
+## Example: Multi-tab workflow
+
+```bash
+playwright-cli open https://example.com
+playwright-cli tab-new https://example.com/other
+playwright-cli tab-list
+playwright-cli tab-select 0
+playwright-cli snapshot
+playwright-cli close
+```
+
+## Example: Debugging with DevTools
+
+```bash
+playwright-cli open https://example.com
+playwright-cli click e4
+playwright-cli fill e7 "test"
+playwright-cli console
+playwright-cli network
+playwright-cli close
+```
+
+```bash
+playwright-cli open https://example.com
+playwright-cli tracing-start
+playwright-cli click e4
+playwright-cli fill e7 "test"
+playwright-cli tracing-stop
+playwright-cli close
+```
+
+## Specific tasks
+
+* **Request mocking** [references/request-mocking.md](references/request-mocking.md)
+* **Running Playwright code** [references/running-code.md](references/running-code.md)
+* **Browser session management** [references/session-management.md](references/session-management.md)
+* **Storage state (cookies, localStorage)** [references/storage-state.md](references/storage-state.md)
+* **Test generation** [references/test-generation.md](references/test-generation.md)
+* **Tracing** [references/tracing.md](references/tracing.md)
+* **Video recording** [references/video-recording.md](references/video-recording.md)

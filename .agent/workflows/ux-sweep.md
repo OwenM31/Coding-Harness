@@ -73,52 +73,74 @@ Discover all routes and interactive surfaces in the application:
 
 ---
 
-## 3. The Exploration & Interaction Loop
+## 3. The Exploration & Interaction Loop (Powered by playwright-cli)
 
 For each target route in the scope:
 
-### Step 3a: Navigate & Screenshot
-1. Launch Playwright via CLI or lightweight Node script (`scratch/sweep_runner.js`).
-2. Navigate to the route at desktop viewport (1280x800).
-3. Wait for network idle.
-4. Capture a full-page screenshot:
+### Step 3a: Open Browser & Navigate
+Open the route in a persistent `playwright-cli` session:
+```powershell
+playwright-cli open "http://localhost:5173{route}"
+playwright-cli resize 1280 800
+```
+
+### Step 3b: Capture Snapshot & Inspect Interactive Surface
+Capture the accessibility snapshot to obtain element refs (`e1`, `e2`, `e3`...):
+```powershell
+playwright-cli snapshot
+```
+The snapshot outputs a clean YAML tree of all visible buttons, inputs, links, headings, and dialogs.
+
+### Step 3c: Capture Visual State
+Capture a full-page screenshot for visual inspection:
+```powershell
+playwright-cli screenshot --filename=".agent/state/artifacts/screenshots/{sanitized_route}_desktop.png"
+```
+View the screenshot with `view_file` to evaluate layout, alignment, and styling.
+
+### Step 3d: Check Console Logs & Network Failures
+Query runtime errors and network requests from the live session:
+```powershell
+# Check for unhandled exceptions and React runtime errors
+playwright-cli console error
+
+# Check for failed 4xx / 5xx network calls
+playwright-cli network
+```
+Flag any `TypeError`, unhandled Promise rejections, or unexpected 401/403/500 API errors.
+
+### Step 3e: The Dead-Button & Interaction Sweep (`--deep` mode)
+Using the refs from `playwright-cli snapshot`:
+1. For each clickable ref (`button`, `a[href]`):
    ```powershell
-   npx playwright screenshot --full-page --viewport-size=1280,800 "http://localhost:5173{route}" ".agent/state/artifacts/screenshots/{sanitized_route}_desktop.png"
+   playwright-cli click <ref>
    ```
-5. View the screenshot to inspect the rendered visual output.
+2. **Evaluate Reaction:**
+   - Did a modal or drawer open?
+     - Take a snapshot to verify content is not empty: `playwright-cli snapshot`
+     - Dismiss the dialog cleanly: `playwright-cli press Escape` or `playwright-cli click <cancel-ref>`
+   - Did a network request dispatch? Check `playwright-cli network`.
+   - Did console errors fire? Check `playwright-cli console error`.
+   - **If NOTHING happened (0 DOM change, 0 network activity, 0 feedback):**
+     Flag as a **`DEAD_CLICK`** defect.
 
-### Step 3b: Collect Runtime Console & Network Failures
-1. Attach listeners for `page.on('console')`, `page.on('pageerror')`, and `page.on('response')`.
-2. Flag any of the following:
-   - `TypeError`, `ReferenceError`, or unhandled Promise rejections.
-   - React error boundaries triggered.
-   - 401/403 errors on routes that should be accessible.
-   - 500 Internal Server Errors from backend APIs.
-
-### Step 3c: The Dead-Button & Interaction Sweep (`--deep` mode)
-1. Query all visible interactive elements: `button:visible`, `a[href]:visible`, `input:visible`.
-2. For each button:
-   - Record element text, aria-label, and role.
-   - Click the element.
-   - **Evaluate Reaction:**
-     - Did a modal, drawer, or dialog open? -> Verify content inside is not empty, then close it (press `Escape` or click Cancel).
-     - Did a network request dispatch? -> Verify a loading state appeared.
-     - Did client validation fire? -> Verify message is visible and readable.
-     - **If NOTHING happened (0 DOM change, 0 network activity, 0 feedback):**
-       Flag as a **`DEAD_CLICK`** defect.
-
-### Step 3d: Form Submission & Error Validation
+### Step 3f: Form Submission & Validation Stress Test
 1. If the route contains forms (inputs, selects, textareas):
-   - Click "Submit" / "Save" with empty inputs.
-   - Does it highlight required fields, or does it fail silently / crash?
-   - Input invalid data (e.g., invalid email, negative numbers) -> Verify user-friendly validation.
+   - Locate submit button ref and click with empty inputs: `playwright-cli click <submit-ref>`.
+   - Run `playwright-cli snapshot` to verify field-level validation messages appeared.
+   - Flag as a defect if submission fails silently or triggers a raw server error.
 
-### Step 3e: Anti-"AI-Slop" Heuristic Inspection
-Review the rendered UI and code for:
+### Step 3g: Anti-"AI-Slop" Heuristic Inspection
+Review the rendered screenshot and snapshot for:
 1. **Raw Data Leaks:** Raw unformatted cents (`$60000`), raw ISO timestamps (`2026-10-15T02:00:00Z`), raw UUIDs.
 2. **Missing Empty States:** An empty data grid or container showing a blank void instead of an informative empty state illustration or message.
 3. **Placeholder Remnants:** Text containing "Lorem ipsum", "TODO", "Sample Item", "Row 1".
 4. **Visual Discord:** Overlapping elements, clipping text, inconsistent spacing, broken typography hierarchy.
+
+### Step 3h: Clean Session Teardown
+```powershell
+playwright-cli close
+```
 
 ---
 
