@@ -152,7 +152,12 @@ Once the user selects the winning variant (e.g. Variant B):
      - **Date:** {timestamp}
      ```
 
-3. **Execute Rigorous Cleanup**:
+3. **Promote Winning Prototype to Presentational UI Shell:**
+   - Promote the winning visual layout into the target feature component path (e.g. `apps/web/src/pages/{feature}/{Page}.tsx`).
+   - Keep the component visually complete with mock props so it compiles cleanly.
+   - This UI Shell becomes the concrete visual foundation that `@plan.md` and `@execute.md` will wire to real API queries, mutations, and business logic.
+
+4. **Execute Rigorous Cleanup**:
    - Keep the reference image of the winner: rename `.agent/state/artifacts/design/variant_b.png` to `.agent/state/artifacts/design/phase_{N}_approved.png`.
    - **Delete all unselected screenshots** (`variant_a.png`, `variant_c.png`, etc.).
    - **Delete the scratch prototype directory** (`scratch/prototypes/`).
