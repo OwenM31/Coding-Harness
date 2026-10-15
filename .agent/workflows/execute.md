@@ -252,18 +252,21 @@ Output based on status:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- HARNESS ► PHASE {N} COMPLETE ✓
+ HARNESS ► PHASE {N} EXECUTION COMPLETE ✓
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 {X} plans executed
-Goal verified ✓
+Wave tasks complete.
 
 ───────────────────────────────────────────────────────
 
 ▶ Next Up
-Phase {N+1}: {Name}
 
-/plan {N+1}  — create execution plans
+/verify {N}    — validate deliverables against SPEC.md with 3-tier proof
+@ux-sweep.md   — (if UI deliverables) exploratory dead-button & anti-slop sweep
+
+Or proceed to next phase:
+/plan {N+1}    — create execution plans for Phase {N+1}
 /execute {N+1} — execute directly (if plans exist)
 
 ───────────────────────────────────────────────────────
@@ -273,10 +276,18 @@ Phase {N+1}: {Name}
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- HARNESS ► MILESTONE COMPLETE 🎉
+ HARNESS ► ALL PHASES EXECUTED 🎉
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-All phases completed and verified.
+All phase plans completed.
+
+───────────────────────────────────────────────────────
+
+▶ Next Up (Milestone Closeout)
+
+@verify.md {N}         — final phase verification audit
+@audit-milestone.md    — cross-phase deliverable audit & full UX sweep
+@complete-milestone.md — tag git release and archive milestone
 
 ───────────────────────────────────────────────────────
 ```

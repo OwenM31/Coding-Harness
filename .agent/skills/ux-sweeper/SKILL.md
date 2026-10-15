@@ -52,9 +52,21 @@ Software breaks at the boundaries:
 - **Cancellation Restitution:** When a user enters half a form, clicks "Cancel", and re-opens the form, is the state cleanly reset rather than partially populated with stale dirty state?
 - **Long Text Overflow:** Does an extra-long title or email break the layout, wrap uncontrollably, or spill out of the parent container?
 
-### 4. Form Validation & Error Feedback
+### 4. Form Validation & Mutation Feedback
 - **Silent Rejections:** Submitting an empty form must NEVER fail silently. Required fields must visibly highlight with clear validation text.
+- **Mutation & Feedback:** Submitting valid dummy data must show explicit feedback (loading spinner, disabled button state, success toast or dialog transition).
 - **Backend Error Translation:** When an API returns a 400 or 409 error (e.g., `DUPLICATE_INVOICE_NUMBER`), does the UI show a clear alert banner / snackbar, or does the user sit staring at an unresponsive screen?
+
+### 5. Dual-Viewport & Responsive Integrity
+Mobile users represent over 50% of web traffic. The sweeper evaluates both Desktop (`1280x800`) and Mobile (`390x844`):
+- **Horizontal Layout Blowout:** When `scrollWidth > innerWidth`, content is overflowing the viewport width, forcing awkward horizontal scrolling. Classified as `RESPONSIVE_OVERFLOW`.
+- **Touch Target Padding:** Interactive buttons on mobile must have sufficient hit area (minimum 44x44px).
+- **Collapsible Navigation:** On mobile viewports, full desktop navbars must cleanly collapse into hamburger menus or bottom sheets without overlapping page titles.
+
+### 6. Adaptive Auth Discovery
+When inspecting role-restricted routes (e.g. `/admin`, `/teacher`):
+- Avoid false positives from unauthenticated redirects to `/login`.
+- Follow the **Adaptive Auth Discovery Ladder**: (1) local state `.agent/state/AUTH_STRATEGY.md`, (2) auto-discovered test seed fixtures, or (3) ask the user once and persist the recipe permanently.
 
 ---
 

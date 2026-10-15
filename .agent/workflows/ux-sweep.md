@@ -24,9 +24,10 @@ All findings are documented with concrete evidence (screenshots and error traces
 <context>
 - Optional arguments: `$ARGUMENTS` (specific route like `/admin/payroll`, or `all`)
 - Flags:
-  - `--deep`: Exercise all interactive buttons, open/close modals, test form validations.
+  - `--deep`: Exercise all interactive buttons, open/close modals, test form validations and mutations.
   - `--quick`: Render all routes and capture screenshots only (fast visual pass).
   - `--role <role>`: Authenticate and sweep with a specific role session (e.g. `admin`, `teacher`, `parent`).
+- Adaptive Auth State: `.agent/state/AUTH_STRATEGY.md` (project auth recipes)
 </context>
 
 <process>
@@ -77,26 +78,62 @@ Discover all routes and interactive surfaces in the application:
 
 For each target route in the scope:
 
-### Step 3a: Open Browser & Navigate
-Open the route in a persistent `playwright-cli` session:
+### Step 3a: Open Browser & Adaptive Auth Resolution
+Open the target route in a persistent `playwright-cli` session:
 ```powershell
 playwright-cli open "http://localhost:5173{route}"
-playwright-cli resize 1280 800
 ```
 
-### Step 3b: Capture Snapshot & Inspect Interactive Surface
-Capture the accessibility snapshot to obtain element refs (`e1`, `e2`, `e3`...):
+**Check for Redirect or Auth Wall:**
+Query the current URL and snapshot:
+```powershell
+playwright-cli eval "window.location.pathname"
+playwright-cli snapshot
+```
+If the current path does NOT match the requested `{route}` (e.g. redirected to `/login`, `/auth`, or a login form is visible):
+
+> [!IMPORTANT]
+> **The Adaptive Auth Discovery Ladder**
+> Do not fail or report misleading defects against the login page when testing a protected route. Resolve auth using the ladder:
+> 1. **Check Local Recipe (`.agent/state/AUTH_STRATEGY.md`):**
+>    If `.agent/state/AUTH_STRATEGY.md` exists, follow the recorded strategy (e.g., storageState file, dev bypass headers, or login script/credentials).
+> 2. **Auto-Discover Dev Fixtures:**
+>    Check if the repo has existing Playwright storage state files (e.g. `playwright/.auth/`, `tests/.auth/`), or dev test users in seed files (e.g. `seeds/users.json`, `prisma/seed.ts`).
+> 3. **Ask User Once (Permanent Recording):**
+>    If no auth mechanism is known, prompt the user *once* with concrete options:
+>    - Option 1: Test account credentials (e.g., email & password for role `{role}`)
+>    - Option 2: Dev bypass header/cookie/query param (e.g. `?devUser=admin` or `auth_token=...`)
+>    - Option 3: Pre-saved storageState JSON path
+>    - Option 4: Skip auth-protected routes (sweep public surfaces only)
+>    Immediately save the user's answer into `.agent/state/AUTH_STRATEGY.md` so future sweeps in this repository run 100% autonomously without ever asking again!
+
+### Step 3b: Dual-Viewport Execution & Responsive Blowout Detection
+Sweep each route across two canonical viewports to detect responsiveness failures:
+
+1. **Desktop Viewport (`1280x800`):**
+   ```powershell
+   playwright-cli resize 1280 800
+   ```
+2. **Mobile Viewport (`390x844`):**
+   ```powershell
+   playwright-cli resize 390 844
+   ```
+   **Evaluate Horizontal Layout Blowout:**
+   ```powershell
+   playwright-cli eval "document.documentElement.scrollWidth > window.innerWidth"
+   ```
+   If `true`: Flag as a **`RESPONSIVE_OVERFLOW`** defect (horizontal clipping / mobile scroll blowout).
+   Switch back to desktop view for interactive sweep:
+   ```powershell
+   playwright-cli resize 1280 800
+   ```
+
+### Step 3c: Capture Accessibility Snapshot & Element Mapping
+Capture the accessibility tree snapshot to obtain interactive element references (`e1`, `e2`, `e3`...):
 ```powershell
 playwright-cli snapshot
 ```
-The snapshot outputs a clean YAML tree of all visible buttons, inputs, links, headings, and dialogs.
-
-### Step 3c: Capture Visual State
-Capture a full-page screenshot for visual inspection:
-```powershell
-playwright-cli screenshot --filename=".agent/state/artifacts/screenshots/{sanitized_route}_desktop.png"
-```
-View the screenshot with `view_file` to evaluate layout, alignment, and styling.
+The snapshot provides an accurate YAML hierarchy of all buttons, inputs, links, headings, and dialogs.
 
 ### Step 3d: Check Console Logs & Network Failures
 Query runtime errors and network requests from the live session:
@@ -110,13 +147,13 @@ playwright-cli network
 Flag any `TypeError`, unhandled Promise rejections, or unexpected 401/403/500 API errors.
 
 ### Step 3e: The Dead-Button & Interaction Sweep (`--deep` mode)
-Using the refs from `playwright-cli snapshot`:
+Using the element refs from `playwright-cli snapshot`:
 1. For each clickable ref (`button`, `a[href]`):
    ```powershell
    playwright-cli click <ref>
    ```
 2. **Evaluate Reaction:**
-   - Did a modal or drawer open?
+   - Did a modal, drawer, or dialog open?
      - Take a snapshot to verify content is not empty: `playwright-cli snapshot`
      - Dismiss the dialog cleanly: `playwright-cli press Escape` or `playwright-cli click <cancel-ref>`
    - Did a network request dispatch? Check `playwright-cli network`.
@@ -124,23 +161,39 @@ Using the refs from `playwright-cli snapshot`:
    - **If NOTHING happened (0 DOM change, 0 network activity, 0 feedback):**
      Flag as a **`DEAD_CLICK`** defect.
 
-### Step 3f: Form Submission & Validation Stress Test
+### Step 3f: Form Mutation & Feedback Stress Test (`--deep` mode)
 1. If the route contains forms (inputs, selects, textareas):
-   - Locate submit button ref and click with empty inputs: `playwright-cli click <submit-ref>`.
-   - Run `playwright-cli snapshot` to verify field-level validation messages appeared.
-   - Flag as a defect if submission fails silently or triggers a raw server error.
+   - **Negative Test (Blank Submit):** Click submit with empty inputs: `playwright-cli click <submit-ref>`. Verify field-level validation messages appear.
+   - **Positive Mutation & Feedback Test:**
+     - Fill required inputs using semantic dummy values matching their type (e.g. `test@example.com` for email, `12345` for number, `Sample text` for text).
+     - Click submit: `playwright-cli click <submit-ref>`.
+     - **Evaluate Feedback:**
+       - Does a loading spinner, skeleton, or disabled button state activate?
+       - Does a success alert, toast, or navigation occur?
+       - Does double-clicking submit rapidly trigger duplicate network requests? (Flag if no debounce / double-submit lock).
+       - Did a 500 server crash or unhandled console exception fire?
 
-### Step 3g: Anti-"AI-Slop" Heuristic Inspection
-Review the rendered screenshot and snapshot for:
-1. **Raw Data Leaks:** Raw unformatted cents (`$60000`), raw ISO timestamps (`2026-10-15T02:00:00Z`), raw UUIDs.
-2. **Missing Empty States:** An empty data grid or container showing a blank void instead of an informative empty state illustration or message.
-3. **Placeholder Remnants:** Text containing "Lorem ipsum", "TODO", "Sample Item", "Row 1".
-4. **Visual Discord:** Overlapping elements, clipping text, inconsistent spacing, broken typography hierarchy.
+### Step 3g: Data State Heuristics & Anti-"AI-Slop" Inspection
+Inspect rendered elements against AI-slop anti-patterns:
+1. **Empty State vs Populated State:**
+   - If a table, list, or grid has 0 items: does it render an informative empty state illustration/copy with a "Create..." CTA, or a raw blank void?
+2. **Raw Data Leaks:**
+   - Raw integer cents (`$60000` instead of `$600.00`), raw ISO timestamps (`2026-10-15T02:00:00Z` instead of `Oct 15, 2026`), raw internal UUIDs/GUIDs.
+3. **Placeholder Remnants:**
+   - Copy containing "Lorem ipsum", "TODO", "Sample Item", "Row 1", "Default title".
+4. **Visual Discord & Contrast:**
+   - Overlapping elements, clipped button text, low contrast text (< 4.5:1 ratio).
 
-### Step 3h: Clean Session Teardown
-```powershell
-playwright-cli close
-```
+### Step 3h: Clean Session Teardown & Screenshot Hygiene
+- If defects were detected on this route, save screenshot as proof:
+  ```powershell
+  playwright-cli screenshot --filename=".agent/state/artifacts/screenshots/def_{route_name}.png"
+  ```
+- **Screenshot Hygiene:** Do not hoard passing screenshots. Remove transient / passing screenshots to prevent artifact clutter in the repository.
+- Close session:
+  ```powershell
+  playwright-cli close
+  ```
 
 ---
 
