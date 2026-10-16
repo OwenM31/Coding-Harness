@@ -164,7 +164,10 @@ For each plan in the current wave:
    - If `<context>` links to `STYLE.md` or `DESIGN_STATE.md`, load the required design tokens.
 2. **Context efficiency** — Follow `context-fetch` discipline: search before reading files. For files >100 lines, extract targeted sections or use outline mode (`context-compressor`) instead of loading full files.
 3. **Execute tasks** — Follow `<task>` blocks in order:
-   - **For Contract-First / TDD tasks:** If implementing logic against an existing specification test suite, your goal is to make all assertions pass green. **You are strictly forbidden from modifying test assertions to force a pass.** If a test fails, the implementation must be corrected.
+   > [!IMPORTANT]
+   > **Skill Activation: test-engineer & data-architect**
+   > - **Contract-First Invariant:** If implementing logic against an existing specification test suite, your goal is to make all assertions pass green. **You are strictly forbidden from modifying test assertions to force a pass.** If a test fails, the implementation must be corrected.
+   > - **5-Layer Contract Parity:** Ensure types, Zod schemas, DTOs, and database mutations strictly honor the precision invariants (e.g. integer cents, basis points) and state transition rules defined in `RESEARCH.md`.
    - **For UI tasks:** If an approved presentational UI shell component was established by `@design-phase` (e.g. `src/pages/.../View.tsx`), do NOT rewrite styling or layout from scratch. Preserve the approved design tokens, cards, and structure; wire real data hooks, state management, and event mutations into the existing shell.
 4. **Verify each task** — Run `<verify>` commands
 5. **Commit per task:**

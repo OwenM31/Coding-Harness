@@ -1,6 +1,6 @@
 ---
 description: Exploratory UX and defect hunter that sweeps live routes, exercises interactive elements, detects dead buttons, and catches visual AI-slop
-argument-hint: "[route-or-all] [--deep] [--role <role>]"
+argument-hint: "[route-or-all] [--deep] [--audit] [--role <role>]"
 ---
 
 # /ux-sweep Workflow
@@ -8,15 +8,16 @@ argument-hint: "[route-or-all] [--deep] [--role <role>]"
 <role>
 You are an exploratory UX auditor and defect hunter. You systematically inspect applications from the end-user's sensory perspective. You do not assume that green unit tests equate to a functional interface.
 
-Your job: Walk through live routes, click buttons, inspect dialogs, detect silent console crashes, expose unhandled edge states, uncover visual AI-slop, and compile an actionable defect ledger.
+Your job: Walk through live routes, click buttons, inspect dialogs, detect silent console crashes, expose unhandled edge states, uncover visual AI-slop, audit live UI against user stories, and compile an actionable defect ledger.
 </role>
 
 <objective>
 Simulate real user navigation and interactions across the application's surface area to identify:
 1. **Dead Buttons & Broken Wiring** (clicks that do nothing or trigger silent runtime errors).
-2. **Visual AI-Slop** (raw unformatted cents/dates, missing empty states, clipping, placeholder text).
-3. **Form & State Glitches** (silent submission failures, un-closable modals, double-submit bugs).
+2. **Visual AI-Slop** (raw unformatted cents/dates, missing empty states, clipping, placeholder text, fluffy cheerleading).
+3. **Form & State Glitches** (silent submission failures, un-closable modals, double-submit bugs, inert disabled buttons).
 4. **Console & Network Errors** (unhandled Promise rejections, 4xx/5xx API failures).
+5. **Spec & Story Non-Conformance** (missing controls, half-built features, phantom UI that fails user story criteria).
 
 All findings are documented with concrete evidence (screenshots and error traces) in `.agent/state/DEFECTS.md`.
 </objective>
@@ -25,6 +26,7 @@ All findings are documented with concrete evidence (screenshots and error traces
 - Optional arguments: `$ARGUMENTS` (specific route like `/admin/payroll`, or `all`)
 - Flags:
   - `--deep`: Exercise all interactive buttons, open/close modals, test form validations and mutations.
+  - `--audit`: Full Spec & User Story Conformance Audit mode. Evaluates the live application against user stories in `.agent/state/SPEC.md` (or provided requirements), scoring functional completeness, sensory ergonomics, and anti-slop craft into a comprehensive conformance scorecard.
   - `--quick`: Render all routes and capture screenshots only (fast visual pass).
   - `--role <role>`: Authenticate and sweep with a specific role session (e.g. `admin`, `teacher`, `parent`).
 - Adaptive Auth State: `.agent/state/AUTH_STRATEGY.md` (project auth recipes)
@@ -72,9 +74,17 @@ Discover all routes and interactive surfaces in the application:
    - If `$ARGUMENTS` specifies a route (e.g., `/admin/payroll`), scope the sweep to that view and its children.
    - If `$ARGUMENTS` is empty or `all`, sweep all discovered routes in sequence.
 
+3. **Spec & User Story Mapping (if `--audit` mode):**
+   - Load user stories from `.agent/state/SPEC.md` (or discover from `README.md` / `PRD.md`).
+   - Map each user story to its target route(s), required actor role, and expected UI capabilities (required inputs, buttons, tables, filters).
+
 ---
 
 ## 3. The Exploration & Interaction Loop (Powered by playwright-cli)
+
+> [!IMPORTANT]
+> **Skill Activation: ux-sweeper & playwright-cli**
+> Read and apply `.agent/skills/ux-sweeper/SKILL.md` and `.agent/skills/playwright-cli/SKILL.md`. Conduct the 3-dimensional inspection: (1) Functional Story Completeness, (2) Interaction & Sensory Ergonomics, and (3) Professional Anti-Slop Filter.
 
 For each target route in the scope:
 
@@ -209,12 +219,23 @@ Inspect rendered elements against AI-slop and usability anti-patterns:
 Write or update `.agent/state/DEFECTS.md` with structured findings:
 
 ```markdown
-# UX Defect Ledger
+# UX Defect Ledger & Conformance Audit
 
 **Sweep Date:** {YYYY-MM-DD HH:MM}
 **Scope:** {All Routes | Specific Route}
+**Mode:** {Standard Exploratory | Spec Conformance Audit}
 **Total Inspected:** {N} routes, {M} interactive elements
 **Total Defects Found:** {P0: X, P1: Y, P2: Z, P3: W}
+
+---
+
+## User Story Conformance Scorecard (if --audit)
+
+| User Story | Target Route | Functional Completeness | Interaction Ergonomics | Craft & Anti-Slop | Verdict |
+|---|---|---|---|---|---|
+| [US-101] Filter Statements | `/admin/payroll` | ⚠️ Partial (Missing date range) | ✅ Pass (0 dead clicks) | ❌ Fail (Raw integer cents) | PARTIAL |
+| [US-102] Approve Payroll | `/admin/payroll` | ✅ Full | ❌ Fail (Dead click on modal) | ✅ Pass (Zero-fluff copy) | DEFECTIVE |
+| [US-103] Export CSV | `/admin/reports` | ❌ Missing (Button absent) | N/A | N/A | MISSING |
 
 ---
 
@@ -222,6 +243,7 @@ Write or update `.agent/state/DEFECTS.md` with structured findings:
 
 ### [DEF-001] {Clear Title Describing Issue}
 - **Severity:** P0 | P1 | P2 | P3
+- **User Story:** [US-102] (if --audit)
 - **Route:** `/admin/payroll`
 - **Actor Role:** Admin
 - **Element:** "Approve Statement" button in StatementDetailDrawer

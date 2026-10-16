@@ -42,7 +42,7 @@ CORE EXECUTION
 @plan.md [N]               Decompose phase N into atomic, wave-sequenced plans (2-3 tasks max)
 @execute.md [N]            Execute wave-by-wave with atomic task verification & commits
 @verify.md [N]             Validate phase deliverables against SPEC.md with 3-tier proof
-@ux-sweep.md [route]       Exploratory UX sweep: dead buttons, responsive blowout, visual AI-slop
+@ux-sweep.md [route] [--audit] Exploratory UX sweep & spec conformance audit (dead buttons, slop)
 @debug.md [issue]          Systematic 3-strike debugging with fresh subagent contexts
 @map.md                    Analyze existing codebase architecture → ARCHITECTURE.md
 

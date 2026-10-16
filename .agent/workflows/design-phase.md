@@ -48,6 +48,10 @@ Bridge the gap between architectural research and task planning by establishing 
 
 ## 2. Niche Benchmark & Aesthetic Research
 
+> [!IMPORTANT]
+> **Skill Activation: frontend-designer**
+> Read and apply `.agent/skills/frontend-designer/SKILL.md`. Ground visual and UX decisions in real-world benchmarks: extract 7 dimensions (including Zero-Fluff copy voice and 4-state patterns) before generating prototype variants.
+
 1. **Identify the Product Niche:**
    - Determine the aesthetic posture (e.g. high-end edtech, technical dev tool, fintech operations, modern SaaS).
 

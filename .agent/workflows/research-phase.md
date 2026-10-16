@@ -99,8 +99,11 @@ researched_at: {date}
 ### {Topic 2}
 ...
 
-## Technical Architecture & Contracts (Skill: data-architect)
-*(Required for phases involving databases, schemas, state machines, or APIs)*
+## Technical Architecture & Contracts
+
+> [!IMPORTANT]
+> **Skill Activation: data-architect**
+> If this phase touches databases, schemas, state transitions, financial calculations, or API contracts, read and apply `.agent/skills/data-architect/SKILL.md`. Formulate the 5-layer contract alignment table, state transition matrix, and immutable system invariants below before marking research complete.
 
 ### 5-Layer Contract Alignment
 | Domain Concept | SQL DDL / Storage | Shared TypeScript | Runtime Validation (Zod) | API Request/Response DTO | Form / Client State |

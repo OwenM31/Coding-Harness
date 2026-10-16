@@ -63,6 +63,10 @@ From the phase definition, identify **must-haves** — requirements that MUST be
 
 ## 3. Verify Each Must-Have (The 3-Tier Verification Triangle)
 
+> [!IMPORTANT]
+> **Skill Activation: verifier, test-engineer, data-architect**
+> Read and apply `.agent/skills/verifier/SKILL.md` (for wiring and evidence), `.agent/skills/test-engineer/SKILL.md` (for requirement-to-test traceability), and `.agent/skills/data-architect/SKILL.md` (for 5-layer contract parity).
+
 For each must-have, apply the **3-Tier Verification Triangle**:
 
 ```

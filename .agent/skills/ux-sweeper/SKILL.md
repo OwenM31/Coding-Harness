@@ -99,3 +99,44 @@ When executing sweeps, record every finding in `.agent/state/DEFECTS.md` using t
 - **Suspect File(s):** `apps/web/src/pages/admin/payroll/StatementDetailDrawer.tsx#L142`
 - **Suggested Fix:** Ensure `statement.statement_id` is passed correctly from the parent row prop.
 ```
+
+---
+
+## Spec & User Story Conformance Auditing (`--audit` Mode)
+
+When dropping the harness into an existing or AI-generated codebase, run `@ux-sweep.md --audit` to perform a rigorous gap analysis of **Spec Intent vs. Live Reality**:
+
+### 1. User Story Cartography
+- Load user stories from `.agent/state/SPEC.md` (or discover from `README.md` / `PRD.md`).
+- Map each user story to its corresponding route(s) and expected actor role.
+- Extract testable capabilities required by each story (e.g., "date filter", "status dropdown", "export button", "approval modal").
+
+### 2. The 3-Dimensional Conformance Audit
+For every user story, inspect the live running interface across 3 distinct dimensions:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. FUNCTIONAL COMPLETENESS                                      │
+│    • Are all inputs, controls, and data columns present?        │
+│    • Does the action actually mutate data or is it a mock facade│
+├─────────────────────────────────────────────────────────────────┤
+│ 2. SENSORY & INTERACTION ERGONOMICS                             │
+│    • 0 dead clicks, 0 inert disabled buttons without tooltips   │
+│    • Forms validate on blur; in-flight submission has spinner   │
+├─────────────────────────────────────────────────────────────────┤
+│ 3. CRAFT & ANTI-SLOP POLISH                                     │
+│    • Zero-fluff microcopy (scannable nouns, action verbs)       │
+│    • 4 invariant screen states (loading skeleton, empty CTA)    │
+│    • Zero mobile layout blowout (scrollWidth <= innerWidth)     │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 3. Conformance Grading System
+Grade each user story:
+- **FULL (✅):** All controls present, operational, responsive, zero-fluff copy, 0 dead clicks.
+- **PARTIAL (⚠️):** Story is partially implemented (e.g. table renders, but date filter is missing, or values are unformatted cents).
+- **DEFECTIVE (❌):** Controls are present but broken (dead clicks, 500 network errors, console crashes, unclosable modals).
+- **MISSING (🚫):** No UI exists for this user story.
+
+### 4. Remediation Bridge
+Every gap identified during the audit produces an entry in the User Story Conformance Scorecard and a categorized defect item in `.agent/state/DEFECTS.md`, enabling immediate automated remediation via `@plan.md --fix-defects` or `@execute.md --gaps-only`.
