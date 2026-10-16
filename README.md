@@ -8,7 +8,7 @@
 
 ---
 
-**REQUIRES** `playwright-cli` for `design-phase` and `ux-sweep` workflows.  
+**REQUIRES** `playwright-cli` for `design-phase`, `ux-sweep`, and `record-demo` workflows.  
 
 ---
 ## Intro
@@ -37,8 +37,8 @@ For example, in the simplest case, the **PLAN**->**EXECUTE** workflow can be run
 <li>Grouping phases into <i>MILESTONES</i>:
 <ul><li><b>NEW-MILESTONE</b> (generates list of phases) ➔ <b>PLAN {N}</b> ➔ <b>EXECUTE {N}</b> ➔ <b>VERIFY {N}</b> ➔ <b>AUDIT-MILESTONE</b> ➔ <b>COMPLETE-MILESTONE</b></li></ul>
 </li>
-<li>Specialized cycle for UI work.
-<ul><li><b>DISCUSS-PHASE</b> ➔ <b>RESEARCH-PHASE</b> ➔ <b>DESIGN-PHASE</b> ➔ <b>PLAN</b> ➔ <b>EXECUTE</b></li></ul>
+<li>Specialized cycle for UI work:
+<ul><li><b>DISCUSS-PHASE</b> ➔ <b>RESEARCH-PHASE</b> ➔ <b>DESIGN-PHASE</b> ➔ <b>PLAN</b> ➔ <b>EXECUTE</b> ➔ <b>RECORD-DEMO</b></li></ul>
 </li>
 </ul>
 

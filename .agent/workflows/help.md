@@ -75,6 +75,7 @@ UTILITIES
 @help.md                   Display this guide
 @web-search.md [query]     Perform targeted web searches for APIs, syntax, and libraries
 @create-asset.md "<desc>"  Generate visual assets (SVG/PNG) with 5-variant contact sheet & sharpening loop
+@record-demo.md [flow]     Record user flow with annotated HUD & export optimized demo GIF for README
 @update-harness.md [flags] Update harness from GitHub (preserves .agent/state/)
 @whats-new.md              Display harness changelog and recent enhancements
 
