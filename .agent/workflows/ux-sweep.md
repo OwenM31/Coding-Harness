@@ -174,14 +174,21 @@ Using the element refs from `playwright-cli snapshot`:
        - Did a 500 server crash or unhandled console exception fire?
 
 ### Step 3g: Data State Heuristics & Anti-"AI-Slop" Inspection
-Inspect rendered elements against AI-slop anti-patterns:
+Inspect rendered elements against AI-slop and usability anti-patterns:
 1. **Empty State vs Populated State:**
    - If a table, list, or grid has 0 items: does it render an informative empty state illustration/copy with a "Create..." CTA, or a raw blank void?
-2. **Raw Data Leaks:**
+2. **Fluffy AI Copy & Cheerleading:**
+   - Conversational filler ("Welcome to your incredible dashboard", "Here you can easily manage..."), exclamation points, or artificial cheerleading ("Great job!").
+   - Headlines should be single/dual-word scannable nouns; buttons should be action-verbs.
+3. **Inert Disabled Submit Buttons:**
+   - Is a submit button disabled before submission without any inline helper text or tooltip explaining *which* field is missing/invalid? (Flag as UX defect).
+4. **Touch Target Sizing:**
+   - Interactive buttons or icon controls with bounding box < 44×44px on mobile viewport.
+5. **Raw Data Leaks:**
    - Raw integer cents (`$60000` instead of `$600.00`), raw ISO timestamps (`2026-10-15T02:00:00Z` instead of `Oct 15, 2026`), raw internal UUIDs/GUIDs.
-3. **Placeholder Remnants:**
+6. **Placeholder Remnants:**
    - Copy containing "Lorem ipsum", "TODO", "Sample Item", "Row 1", "Default title".
-4. **Visual Discord & Contrast:**
+7. **Visual Discord & Contrast:**
    - Overlapping elements, clipped button text, low contrast text (< 4.5:1 ratio).
 
 ### Step 3h: Clean Session Teardown & Screenshot Hygiene
